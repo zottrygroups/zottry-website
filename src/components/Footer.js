@@ -11,7 +11,7 @@ function Footer() {
       <div className="footer-top">
         <div className="footer-brand">
           <span className="footer-logo">Zottry</span>
-          <p>© {new Date().getFullYear()} Zottry Groups S.A. All rights reserved.</p>
+          <span className="footer-copy">© {new Date().getFullYear()} Zottry Groups S.A. All rights reserved.</span>
         </div>
         <div className="footer-actions">
           {user ? (
