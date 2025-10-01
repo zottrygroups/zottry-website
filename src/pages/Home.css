@@ -1,0 +1,104 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.banner {
+  background: linear-gradient(135deg, rgba(48, 79, 162, 0.95), rgba(239, 22, 77, 0.85)), url("https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1600&q=80") center/cover;
+  color: #ffffff;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 12, 46, 0.35);
+}
+
+.banner-content {
+  position: relative;
+  max-width: 720px;
+  z-index: 1;
+}
+
+.banner h1 {
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+}
+
+.banner p {
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+  max-width: 560px;
+}
+
+.banner-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.banner .btn-outline {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.our-draws {
+  text-align: center;
+}
+
+.section-intro {
+  margin: 0.5rem auto 2rem;
+  max-width: 520px;
+  color: var(--text-light);
+}
+
+.draw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.winners {
+  background: rgba(48, 79, 162, 0.05);
+  border-radius: 24px;
+}
+
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.winner-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 24px rgba(19, 33, 68, 0.08);
+  text-align: left;
+}
+
+.winner-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.winner-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: 0;
+}
+
+.winner-location {
+  color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+  .banner {
+    padding: 3rem 1.5rem;
+  }
+}

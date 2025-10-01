@@ -1,0 +1,233 @@
+.auth-page {
+  max-width: none;
+  width: 100%;
+  padding: 6rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  background: linear-gradient(135deg, rgba(48, 79, 162, 0.08), rgba(239, 22, 77, 0.08));
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 2.75rem 2.25rem;
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 22px 45px rgba(17, 29, 71, 0.16);
+  margin-bottom: 3rem;
+}
+
+.auth-card h1 {
+  margin: 0 0 1rem;
+  text-align: center;
+}
+
+.auth-card > p {
+  margin: 0 0 2rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.auth-form label {
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: left;
+}
+
+.auth-form input,
+.auth-form select,
+.auth-form textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(48, 79, 162, 0.25);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-form input:focus,
+.auth-form select:focus,
+.auth-form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(48, 79, 162, 0.15);
+}
+
+.auth-form textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.checkbox-row input {
+  margin-top: 0.25rem;
+}
+
+.checkbox-row a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.checkbox-row a:hover {
+  text-decoration: underline;
+}
+
+.recaptcha-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(48, 79, 162, 0.25);
+  border-radius: 12px;
+  background: rgba(48, 79, 162, 0.05);
+  font-weight: 600;
+}
+
+.recaptcha-placeholder input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.form-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.form-links a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.auth-callout {
+  margin: 2rem auto 0;
+  text-align: center;
+  color: var(--text-light);
+  max-width: 340px;
+}
+
+.auth-callout a {
+  color: var(--secondary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-callout a:hover {
+  text-decoration: underline;
+}
+
+.code-input-hint {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin-top: -0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.code-input {
+  letter-spacing: 0.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.resend-link {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+
+.form-error {
+  margin: 0 auto 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(239, 22, 77, 0.1);
+  color: var(--secondary);
+  font-weight: 600;
+  max-width: 340px;
+}
+
+
+.form-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.form-navigation .btn {
+  justify-content: center;
+  padding: 0.9rem 2.5rem;
+  font-size: 1.05rem;
+  min-width: 160px;
+}
+
+.form-navigation .btn-outline {
+  color: var(--primary);
+  border: 1px solid rgba(48, 79, 162, 0.35);
+  background: transparent;
+}
+
+@media (max-width: 520px) {
+  .form-navigation {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 2.5rem 1.75rem;
+  }
+
+  .auth-page {
+    padding: 3rem 1.25rem;
+    min-height: unset;
+  }
+
+  .form-links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
