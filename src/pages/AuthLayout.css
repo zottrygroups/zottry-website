@@ -56,6 +56,13 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.auth-form input[aria-invalid="true"],
+.auth-form select[aria-invalid="true"],
+.auth-form textarea[aria-invalid="true"] {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(239, 22, 77, 0.15);
+}
+
 .auth-form input:focus,
 .auth-form select:focus,
 .auth-form textarea:focus {
@@ -125,6 +132,16 @@
   text-decoration: underline;
 }
 
+.link-button {
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
 .auth-btn {
   width: 100%;
   justify-content: center;
@@ -185,6 +202,22 @@
   color: var(--secondary);
   font-weight: 600;
   max-width: 340px;
+}
+
+.form-status {
+  margin: 0 auto 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(48, 79, 162, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+  max-width: 340px;
+}
+
+.field-error {
+  margin: -0.5rem 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--secondary);
 }
 
 

@@ -1,0 +1,51 @@
+.promotions {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.promotions__intro p {
+  max-width: 640px;
+  color: var(--text-medium);
+}
+
+.promotion-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  align-items: end;
+}
+
+.toggle-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-medium);
+  cursor: pointer;
+}
+
+.toggle-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.promotion-meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  font-weight: 600;
+  color: var(--text-medium);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+}

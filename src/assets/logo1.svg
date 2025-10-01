@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" role="img" aria-labelledby="title">
+  <title>Zottry logo</title>
+  <defs>
+    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF164D" />
+      <stop offset="100%" stop-color="#304FA2" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <circle cx="36" cy="30" r="24" fill="url(#logo-gradient)" />
+    <path d="M31.5 20.5h11.6a1.8 1.8 0 0 1 1.4 3l-8.8 8.7h6.5a1.8 1.8 0 0 1 1.3 3l-12.8 12.2c-.9.9-2.5.2-2.5-1.1v-9.9h-6.1a1.8 1.8 0 0 1-1.4-3l8.2-7.7h-4.5a1.8 1.8 0 0 1-1.4-3l6.3-6c.5-.5 1.3-.7 2-.7Z" fill="#FFFFFF" />
+    <text x="90" y="34" font-family="'Montserrat', Arial, sans-serif" font-weight="700" font-size="26" fill="#0F1B3D">ZOTTRY</text>
+    <text x="90" y="48" font-family="'Montserrat', Arial, sans-serif" font-weight="600" font-size="12" letter-spacing="0.3em" fill="#5C6B8A">PLAY SMART</text>
+  </g>
+</svg>

@@ -32,6 +32,11 @@
   align-items: center;
 }
 
+.footer-user {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .footer-actions .btn-outline {
   border-color: rgba(255, 255, 255, 0.5);
 }

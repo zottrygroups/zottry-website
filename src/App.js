@@ -20,21 +20,23 @@ function App() {
   return (
     <Router>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/all-lotteries" element={<AllLotteries />} />
-        <Route path="/lottery-results" element={<LotteryResults />} />
-        <Route path="/my-offers" element={<MyOffers />} />
-        <Route path="/promotions" element={<Promotions />} />
-        <Route path="/how-to-play" element={<HowToPlay />} />
-        <Route path="/rules" element={<Rules />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-code" element={<VerifyCode />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
+      <main id="main-content" tabIndex="-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/all-lotteries" element={<AllLotteries />} />
+          <Route path="/lottery-results" element={<LotteryResults />} />
+          <Route path="/my-offers" element={<MyOffers />} />
+          <Route path="/promotions" element={<Promotions />} />
+          <Route path="/how-to-play" element={<HowToPlay />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-code" element={<VerifyCode />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+      </main>
       <Footer />
     </Router>
   );

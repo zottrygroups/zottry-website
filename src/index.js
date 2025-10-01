@@ -2,10 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { AuthProvider } from './context/AuthContext';
+import { LotteryDataProvider } from './context/LotteryDataContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <LotteryDataProvider>
+        <App />
+      </LotteryDataProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

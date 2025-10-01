@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./AuthLayout.css";
 
 const steps = [
@@ -31,6 +32,8 @@ function Register() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialFormState);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const { register: registerUser, isAuthenticating } = useAuth();
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -78,15 +81,24 @@ function Register() {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateStep(3)) {
       return;
     }
 
-    // TODO: hook up registration submission
-    console.log("Registering user", formData);
+    setError("");
+    const result = await registerUser(formData);
+
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+
+    setSuccessMessage(`Welcome to Zottry, ${result.user.name || "player"}!`);
+    setStep(1);
+    setFormData(initialFormState);
   };
 
   return (
@@ -95,9 +107,19 @@ function Register() {
         <h1>Create your account</h1>
         <p>Join Zottry to buy tickets, manage your wallet, and follow every draw.</p>
 
-        {error && <div className="form-error" role="alert">{error}</div>}
+        {successMessage && (
+          <div className="form-status" role="status" aria-live="polite">
+            {successMessage}
+          </div>
+        )}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        {error && (
+          <div className="form-error" role="alert" aria-live="assertive">
+            {error}
+          </div>
+        )}
+
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
           {step === 1 && (
             <>
               <label htmlFor="title">Title</label>
@@ -303,7 +325,7 @@ function Register() {
 
           <div className="form-navigation">
             {step > 1 && (
-              <button type="button" className="btn btn-outline" onClick={handleBack}>
+              <button type="button" className="btn btn-outline btn-dark" onClick={handleBack}>
                 Back
               </button>
             )}
@@ -315,8 +337,12 @@ function Register() {
             )}
 
             {step === steps.length && (
-              <button type="submit" className="btn auth-btn">
-                Create account
+              <button
+                type="submit"
+                className="btn auth-btn"
+                disabled={isAuthenticating}
+              >
+                {isAuthenticating ? "Creating..." : "Create account"}
               </button>
             )}
           </div>

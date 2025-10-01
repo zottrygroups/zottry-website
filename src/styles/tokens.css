@@ -1,0 +1,18 @@
+:root {
+  --primary: #304fa2;
+  --primary-dark: #203569;
+  --secondary: #ef164d;
+  --secondary-dark: #c70f3d;
+  --text-dark: #0f1b3d;
+  --text-medium: #404e72;
+  --text-light: #666666;
+  --background: #ffffff;
+  --surface: #f5f7fb;
+  --border-soft: rgba(48, 79, 162, 0.15);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --radius-pill: 999px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --transition-base: 0.2s ease;
+}

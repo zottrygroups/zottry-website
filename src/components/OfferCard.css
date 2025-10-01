@@ -1,0 +1,118 @@
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.75rem;
+}
+
+.offer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.75rem;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+
+.offer-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.offer-description {
+  margin: 0;
+  color: var(--text-medium);
+}
+
+.offer-tag {
+  align-self: flex-start;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: rgba(48, 79, 162, 0.1);
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.offer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+}
+
+.save-toggle {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(48, 79, 162, 0.2);
+  background: rgba(48, 79, 162, 0.08);
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-toggle:hover,
+.save-toggle:focus-visible {
+  border-color: var(--primary);
+}
+
+.save-toggle--active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.offer-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: rgba(48, 79, 162, 0.1);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.offer-status--active {
+  background: rgba(48, 162, 113, 0.18);
+  color: #1f7a4a;
+}
+
+.offer-status--expiring-soon {
+  background: rgba(239, 146, 22, 0.18);
+  color: #c06a05;
+}
+
+.offer-status--used {
+  background: rgba(15, 31, 65, 0.1);
+  color: #0f1f41;
+}
+
+.offer-status--live {
+  background: rgba(48, 162, 113, 0.18);
+  color: #1f7a4a;
+}
+
+.offer-status--upcoming {
+  background: rgba(48, 79, 162, 0.12);
+  color: var(--primary);
+}
+
+.offer-expiry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.offer-card .btn {
+  align-self: flex-start;
+}
+
+@media (max-width: 640px) {
+  .offer-card {
+    padding: 1.5rem;
+  }
+}

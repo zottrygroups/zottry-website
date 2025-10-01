@@ -1,15 +1,32 @@
 import React from "react";
 import "./LotteryCard.css";
 
-function LotteryCard({ title, price, frequency, prize }) {
+function LotteryCard({
+  title,
+  price,
+  frequency,
+  prize,
+  description,
+  nextDraw,
+  badge,
+  ctaLabel = "Play Now",
+  onAction
+}) {
   return (
-    <div className="lottery-card">
+    <article className="lottery-card">
+      {badge && <span className="lottery-badge">{badge}</span>}
       <h2>{title}</h2>
-      <p className="price">Ticket: {price}</p>
-      <p>{frequency}</p>
-      <p className="prize">Top Prize: {prize}</p>
-      <button className="buy-btn">Play Now</button>
-    </div>
+      {frequency && <p className="lottery-subtitle">{frequency}</p>}
+      {description && <p className="lottery-description">{description}</p>}
+      <div className="lottery-meta">
+        {price && <span className="price">Ticket {price}</span>}
+        {prize && <span className="prize">Top Prize {prize}</span>}
+      </div>
+      {nextDraw && <p className="lottery-next">Next draw · {nextDraw}</p>}
+      <button type="button" className="buy-btn" onClick={onAction}>
+        {ctaLabel}
+      </button>
+    </article>
   );
 }
 
