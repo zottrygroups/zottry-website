@@ -79,3 +79,34 @@
     padding: 1.5rem;
   }
 }
+
+@media (max-width: 768px) {
+  .results-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .tab-group {
+    justify-content: center;
+  }
+
+  .results-meta {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .results-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .empty-state {
+    padding: 1.75rem;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}

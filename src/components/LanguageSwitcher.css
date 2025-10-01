@@ -94,3 +94,21 @@
     min-width: 200px;
   }
 }
+
+@media (max-width: 560px) {
+  .language-switcher {
+    width: 100%;
+  }
+
+  .language-switcher__toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .language-switcher__menu {
+    min-width: min(240px, 100%);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}

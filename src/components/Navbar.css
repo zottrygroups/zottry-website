@@ -23,6 +23,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .user-chip {
@@ -96,8 +97,9 @@
   }
 
   .header-actions {
+    width: 100%;
     justify-content: flex-end;
-    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
   }
 
   .menu-toggle {
@@ -129,5 +131,38 @@
 
   .menu-bar .nav-link {
     padding: 0.85rem 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .header-top {
+    padding: 0.85rem 1.5rem;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .header-actions .btn,
+  .header-actions .language-switcher {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .header-actions .btn,
+  .header-actions .language-switcher {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .header-actions .language-switcher {
+    align-self: stretch;
   }
 }

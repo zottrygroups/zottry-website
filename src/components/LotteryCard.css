@@ -89,3 +89,9 @@
     padding: 1.5rem;
   }
 }
+
+@media (max-width: 500px) {
+  .lottery-card {
+    padding: 1.35rem;
+  }
+}

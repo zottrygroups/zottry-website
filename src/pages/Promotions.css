@@ -49,3 +49,21 @@
   align-items: center;
   text-align: center;
 }
+
+@media (max-width: 640px) {
+  .promotion-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .promotion-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .empty-state {
+    padding: 1.75rem;
+  }
+}

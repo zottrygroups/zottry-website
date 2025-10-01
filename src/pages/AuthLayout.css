@@ -264,3 +264,22 @@
     gap: 0.75rem;
   }
 }
+
+@media (max-width: 480px) {
+  .checkbox-row {
+    align-items: stretch;
+    flex-direction: row;
+  }
+
+  .checkbox-row input {
+    margin-top: 0.35rem;
+  }
+
+  .auth-card {
+    padding: 2.25rem 1.5rem;
+  }
+
+  .auth-page {
+    padding: 2.5rem 1rem;
+  }
+}

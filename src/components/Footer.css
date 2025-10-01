@@ -75,7 +75,19 @@
     align-items: center;
   }
 
-  .footer-actions,
+  .footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .footer-actions .btn,
+  .footer-actions .language-switcher {
+    width: 100%;
+    justify-content: center;
+  }
+
   .footer-links {
     justify-content: center;
   }

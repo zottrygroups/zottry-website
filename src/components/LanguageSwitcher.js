@@ -102,8 +102,7 @@ function LanguageSwitcher({
                   : ""
               }`.trim()}
               onClick={() => handleSelect(language)}
-              role="menuitemradio"
-              aria-checked={language.code === selectedLanguage.code}
+              role="menuitem"
             >
               <span aria-hidden="true" className="language-switcher__flag">
                 {language.flag}

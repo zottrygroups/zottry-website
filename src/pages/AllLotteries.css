@@ -155,3 +155,29 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 768px) {
+  .lottery-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .lottery-meta-bar {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .lottery-meta-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .empty-state {
+    padding: 1.75rem;
+  }
+
+  .lottery-grid {
+    grid-template-columns: 1fr;
+  }
+}

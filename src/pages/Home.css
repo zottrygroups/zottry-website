@@ -4,6 +4,12 @@
   gap: 3rem;
 }
 
+@media (max-width: 640px) {
+  .home {
+    gap: 2.25rem;
+  }
+}
+
 .banner {
   position: relative;
   color: #ffffff;
@@ -169,31 +175,13 @@
   color: var(--text-light);
 }
 
-.draw-grid {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-
 .draw-carousel,
 .winners-carousel {
   position: relative;
   padding: 0 3rem;
 }
 
-.draw-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.draw-grid > * {
-  flex: 0 0 280px;
-  scroll-snap-align: start;
-}
-
+.draw-grid,
 .winners-grid {
   display: flex;
   flex-wrap: nowrap;
@@ -204,8 +192,14 @@
   scrollbar-width: none;
 }
 
+.draw-grid::-webkit-scrollbar,
 .winners-grid::-webkit-scrollbar {
   display: none;
+}
+
+.draw-grid > * {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
 }
 
 .winners-grid > * {
@@ -361,18 +355,40 @@
   }
 }
 
-@media (max-width: 640px) {
-  .draw-carousel,
-  .winners-carousel {
-    padding: 0 2.25rem;
-  }
-
+@media (max-width: 720px) {
   .draw-grid > * {
-    flex-basis: 240px;
+    flex: 0 0 240px;
   }
 
   .winners-grid > * {
-    flex-basis: 230px;
+    flex: 0 0 230px;
+  }
+}
+
+@media (max-width: 640px) {
+  .draw-carousel,
+  .winners-carousel {
+    padding: 0;
+  }
+
+  .draw-grid,
+  .winners-grid {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    scroll-snap-type: none;
+    gap: 1.25rem;
+  }
+
+  .draw-grid > *,
+  .winners-grid > * {
+    flex: 1 1 260px;
+    max-width: 420px;
+  }
+
+  .draw-carousel .carousel-btn,
+  .winners-carousel .carousel-btn {
+    display: none;
   }
 
   .carousel-btn {
@@ -395,5 +411,126 @@
 
   .banner-dots {
     bottom: 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .banner-inner {
+    min-height: 420px;
+  }
+
+  .banner-content {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 720px) {
+  .banner-slide {
+    padding: clamp(2.5rem, 8vw, 4rem) clamp(1.25rem, 6vw, 3rem);
+  }
+
+  .banner-content {
+    text-align: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .banner-meta {
+    justify-content: center;
+  }
+
+  .banner-actions {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .banner-actions .btn {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 520px) {
+  .banner-content {
+    gap: 0.85rem;
+  }
+
+  .banner-meta {
+    gap: 0.5rem;
+  }
+
+  .banner-meta span {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .banner-actions .btn {
+    width: 100%;
+  }
+
+  .draw-grid > *,
+  .winners-grid > * {
+    flex: 1 1 220px;
+    max-width: 360px;
+  }
+
+  .banner h1 {
+    font-size: 2.15rem;
+  }
+
+  .banner-description {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .draw-carousel,
+  .winners-carousel {
+    padding: 0 1.25rem;
+  }
+
+  .draw-grid > *,
+  .winners-grid > * {
+    flex: 1 1 200px;
+    max-width: 320px;
+  }
+
+  .winner-numbers li {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .banner {
+    padding: 0 0.75rem;
+  }
+
+  .banner-inner {
+    min-height: 380px;
+  }
+
+  .banner h1 {
+    font-size: 1.9rem;
+  }
+
+  .draw-grid > *,
+  .winners-grid > * {
+    flex: 1 1 180px;
+    max-width: 280px;
+  }
+
+  .winner-numbers li {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .winner-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 }
