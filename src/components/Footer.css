@@ -15,7 +15,10 @@
 }
 
 .footer-brand {
-  max-width: 260px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .footer-logo {
@@ -24,6 +27,11 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.footer-copy {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .footer-actions {
