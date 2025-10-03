@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import AllLotteries from "./pages/AllLotteries";
+import Lotteries from "./pages/Lotteries";
 import LotteryResults from "./pages/LotteryResults";
 import MyOffers from "./pages/MyOffers";
 import Promotions from "./pages/Promotions";
@@ -22,7 +23,6 @@ import VerifyCode from "./pages/VerifyCode";
 import ResetPassword from "./pages/ResetPassword";
 import LoginModal from "./components/LoginModal";
 import { useAuth } from "./context/AuthContext";
-import LotteryIndex from "./pages/lotteries";
 import Spark from "./pages/lotteries/Spark";
 import Pulse from "./pages/lotteries/Pulse";
 import Blaze from "./pages/lotteries/Blaze";
@@ -56,7 +56,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/all-lotteries" element={<AllLotteries />} />
-          <Route path="/lotteries" element={<LotteryIndex />} />
+          <Route path="/lotteries" element={<Lotteries />} />
           <Route path="/lottery-results" element={<LotteryResults />} />
           <Route path="/my-offers" element={<MyOffers />} />
           <Route path="/promotions" element={<Promotions />} />

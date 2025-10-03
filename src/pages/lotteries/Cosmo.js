@@ -1,19 +1,18 @@
 import React from "react";
-import LotteryPage from "../../components/lottery/LotteryPage";
+import LotteryTemplate from "./LotteryTemplate";
 
 function Cosmo() {
   return (
-    <LotteryPage
+    <LotteryTemplate
       name="Z-Cosmo"
-      tagline="$3 Draw every Wednesday"
-      ticketPrice="$3.00"
-      frequency="Draws every Wednesday at 21:00 UTC"
+      ticketPrice="$3"
       firstPrize="$250,000"
-      nextDrawDate="2025-01-08T21:00:00Z"
+      frequency="Every Wednesday"
+      nextDrawDate="2025-01-01T19:30:00Z"
       pastResults={[
-        { date: "2024-12-25", numbers: [6, 18, 24, 33, 41, 52] },
-        { date: "2024-12-18", numbers: [4, 11, 19, 37, 42, 48] },
-        { date: "2024-12-11", numbers: [9, 16, 28, 35, 47, 51] }
+        { date: "2024-12-25", numbers: [8, 13, 21, 34, 42, 47] },
+        { date: "2024-12-18", numbers: [5, 16, 24, 31, 39, 46] },
+        { date: "2024-12-11", numbers: [2, 14, 29, 33, 41, 48] }
       ]}
     />
   );

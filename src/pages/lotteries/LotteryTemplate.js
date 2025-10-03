@@ -3,21 +3,30 @@ import Card from "../../components/ui/Card";
 import DataTable from "../../components/ui/DataTable";
 import Modal from "../../components/ui/Modal";
 import "../../styles/account.css";
+import "../../styles/lottery-template.css";
 
-const prizeColumns = [
-  { key: "tier", header: "Tier" },
-  { key: "matches", header: "Matches" },
-  {
-    key: "payout",
-    header: "Prize",
-    render: (row) => row.payout
-  }
+const HOW_TO_PLAY_STEPS = ["Register", "Deposit", "Buy Ticket", "Wait for Draw", "Check Results"];
+
+const PRIZE_COLUMNS = [
+  { key: "tier", header: "Prize Tier" },
+  { key: "details", header: "Details" },
+  { key: "payout", header: "Payout", align: "right" }
 ];
 
-const formatCountdown = (targetTimestamp, currentTimestamp) => {
-  const diff = targetTimestamp - currentTimestamp;
+const RESULTS_COLUMNS = [
+  { key: "date", header: "Date" },
+  { key: "numbers", header: "Winning Numbers" }
+];
+
+const computeTimeLeft = (targetDate) => {
+  const target = new Date(targetDate);
+  if (Number.isNaN(target.getTime())) {
+    return { totalMs: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const diff = target.getTime() - Date.now();
   if (diff <= 0) {
-    return { label: "Draw in progress", expired: true };
+    return { totalMs: diff, days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
   const totalSeconds = Math.floor(diff / 1000);
@@ -26,126 +35,210 @@ const formatCountdown = (targetTimestamp, currentTimestamp) => {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  return {
-    label: `${days}d ${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`,
-    expired: false
-  };
+  return { totalMs: diff, days, hours, minutes, seconds };
 };
 
 function LotteryTemplate({
   name,
-  price,
-  frequencyText,
-  description,
-  rules,
-  prizeTable,
-  getNextDraw,
-  jackpotText
+  ticketPrice,
+  firstPrize,
+  frequency,
+  nextDrawDate,
+  pastResults = []
 }) {
-  const [now, setNow] = useState(() => Date.now());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(() => computeTimeLeft(nextDrawDate));
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setNow(Date.now());
+    setTimeLeft(computeTimeLeft(nextDrawDate));
+    const timer = window.setInterval(() => {
+      setTimeLeft(computeTimeLeft(nextDrawDate));
     }, 1000);
 
-    return () => window.clearInterval(interval);
-  }, []);
+    return () => window.clearInterval(timer);
+  }, [nextDrawDate]);
 
-  const nextDraw = useMemo(() => {
-    const reference = new Date(now);
-    return getNextDraw(reference);
-  }, [getNextDraw, now]);
-
-  const countdown = useMemo(() => formatCountdown(nextDraw.getTime(), now), [nextDraw, now]);
+  const cadence = typeof frequency === "string" ? frequency.toLowerCase() : "regularly";
+  const heroTagline = useMemo(
+    () => `${firstPrize} up for grabs ${cadence.includes("every") || cadence.includes("daily") ? cadence : `every ${cadence}`}.`,
+    [firstPrize, cadence]
+  );
 
   const formattedNextDraw = useMemo(() => {
-    if (!nextDraw || Number.isNaN(nextDraw.getTime())) {
-      return "TBC";
+    const parsed = new Date(nextDrawDate);
+    if (Number.isNaN(parsed.getTime())) {
+      return "To be confirmed";
     }
-    return nextDraw.toLocaleString(undefined, {
+    return parsed.toLocaleString(undefined, {
       weekday: "short",
-      year: "numeric",
       month: "short",
       day: "numeric",
+      year: "numeric",
       hour: "2-digit",
       minute: "2-digit"
     });
-  }, [nextDraw]);
+  }, [nextDrawDate]);
+
+  const prizeRows = useMemo(
+    () => [
+      {
+        id: "first-prize",
+        tier: "First Prize",
+        details: "Match all numbers",
+        payout: firstPrize
+      }
+    ],
+    [firstPrize]
+  );
+
+  const resultsRows = useMemo(
+    () =>
+      pastResults
+        .slice(0, 3)
+        .map((result, index) => {
+          const displayNumbers = Array.isArray(result.numbers)
+            ? result.numbers.join(" ")
+            : result.numbers;
+
+          let displayDate = result.date;
+          const parsed = new Date(result.date);
+          if (!Number.isNaN(parsed.getTime())) {
+            displayDate = parsed.toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "short",
+              day: "numeric"
+            });
+          }
+
+          return {
+            id: `${result.date}-${index}`,
+            date: displayDate,
+            numbers: displayNumbers
+          };
+        }),
+    [pastResults]
+  );
+
+  const timeSegments = [
+    { label: "Days", value: String(timeLeft.days).padStart(2, "0") },
+    { label: "Hours", value: String(timeLeft.hours).padStart(2, "0") },
+    { label: "Minutes", value: String(timeLeft.minutes).padStart(2, "0") },
+    { label: "Seconds", value: String(timeLeft.seconds).padStart(2, "0") }
+  ];
+
+  const handleActionClick = () => {
+    setIsModalOpen(true);
+  };
 
   return (
-    <div className="account-page">
-      <header className="account-page__header">
-        <h1>{name}</h1>
-        <p>{description}</p>
-      </header>
-
-      <Card spacing="compact" title="Draw overview">
-        <div className="lottery-overview">
-          <div>
-            <span className="lottery-overview__label">Ticket price</span>
-            <p className="lottery-overview__value">{price}</p>
-          </div>
-          <div>
-            <span className="lottery-overview__label">Draw frequency</span>
-            <p className="lottery-overview__value">{frequencyText}</p>
-          </div>
-          <div>
-            <span className="lottery-overview__label">Next draw</span>
-            <p className="lottery-overview__value">{formattedNextDraw}</p>
-          </div>
-          {jackpotText ? (
-            <div>
-              <span className="lottery-overview__label">Jackpot</span>
-              <p className="lottery-overview__value">{jackpotText}</p>
-            </div>
-          ) : null}
-        </div>
-        <div className="lottery-countdown">
-          <span className="lottery-countdown__label">Time until draw</span>
-          <strong className="lottery-countdown__value">{countdown.label}</strong>
-          <button
-            type="button"
-            className="account-button account-button--warning"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Buy ticket
+    <div className="page lottery-template">
+      <Card
+        title={name}
+        headingLevel={1}
+        description={heroTagline}
+        actions={
+          <button type="button" className="btn btn-secondary" onClick={handleActionClick}>
+            Play Now
           </button>
+        }
+        className="lottery-template__hero"
+      >
+        <div className="lottery-template__metrics">
+          <div className="lottery-template__metric">
+            <span className="lottery-template__metric-label">Ticket Price</span>
+            <span className="lottery-template__metric-value">{ticketPrice}</span>
+          </div>
+          <div className="lottery-template__metric">
+            <span className="lottery-template__metric-label">First Prize</span>
+            <span className="lottery-template__metric-value">{firstPrize}</span>
+          </div>
+          <div className="lottery-template__metric">
+            <span className="lottery-template__metric-label">Frequency</span>
+            <span className="lottery-template__metric-value">{frequency}</span>
+          </div>
         </div>
       </Card>
 
-      <Card title="How to play" description="Follow these quick steps before the draw closes.">
-        <ol className="lottery-rules">
-          {rules.map((rule) => (
-            <li key={rule}>{rule}</li>
+      <section className="lottery-template__primary">
+        <Card title="Next draw" className="lottery-template__countdown-card" spacing="compact">
+          <p className="lottery-template__next-draw">Next draw: {formattedNextDraw}</p>
+          {timeLeft.totalMs <= 0 ? (
+            <p className="lottery-template__countdown-status">The next draw is underway. Check back soon!</p>
+          ) : (
+            <div className="lottery-template__countdown-grid">
+              {timeSegments.map((segment) => (
+                <div key={segment.label} className="lottery-template__countdown-segment">
+                  <span className="lottery-template__countdown-value">{segment.value}</span>
+                  <span className="lottery-template__countdown-label">{segment.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <button type="button" className="btn" onClick={handleActionClick}>
+            Play Now
+          </button>
+        </Card>
+
+        <Card title="Prize breakdown" className="lottery-template__prize-card" spacing="compact">
+          <DataTable
+            columns={PRIZE_COLUMNS}
+            rows={prizeRows}
+            getRowKey={(row) => row.id}
+            ariaLabel={`${name} prize breakdown`}
+          />
+        </Card>
+      </section>
+
+      <Card
+        title="How to play"
+        description="Follow these simple steps to join the next draw."
+        className="lottery-template__how-to"
+      >
+        <ol className="lottery-template__steps">
+          {HOW_TO_PLAY_STEPS.map((step) => (
+            <li key={step}>{step}</li>
           ))}
         </ol>
       </Card>
 
-      <Card title="Prize table">
+      <Card
+        title="Recent results"
+        description="Catch up on the last draws and compare winning numbers."
+        className="lottery-template__results"
+      >
         <DataTable
-          columns={prizeColumns}
-          rows={prizeTable}
-          getRowKey={(row) => `${row.tier}-${row.payout}`}
-          ariaLabel={`${name} prize table`}
+          columns={RESULTS_COLUMNS}
+          rows={resultsRows}
+          getRowKey={(row) => row.id}
+          ariaLabel={`${name} past results`}
+          emptyMessage="No results available yet."
         />
+      </Card>
+
+      <Card className="lottery-template__cta-card" spacing="compact">
+        <div>
+          <h2>Ready to buy your ticket?</h2>
+          <p>Secure your spot in the next {name} draw before the countdown hits zero.</p>
+        </div>
+        <button type="button" className="btn btn-secondary" onClick={handleActionClick}>
+          Buy Ticket
+        </button>
       </Card>
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Ticket sales opening soon"
-        description="We are finalising payments with our provider before ticket purchases go live."
-        footer={(
-          <button type="button" className="account-button" onClick={() => setIsModalOpen(false)}>
-            Close
+        title="Coming Soon"
+        description="Ticket sales for this draw will open shortly."
+        footer={
+          <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>
+            Got it
           </button>
-        )}
+        }
       >
-        <p style={{ margin: 0 }}>
-          You will receive an email from Zottry as soon as {name} tickets are available to purchase
-          online. In the meantime, add funds to your wallet and explore other draws.
+        <p>
+          We are putting the finishing touches on our secure checkout. In the meantime, explore other
+          Zottry games and get ready to play as soon as tickets become available.
         </p>
       </Modal>
     </div>

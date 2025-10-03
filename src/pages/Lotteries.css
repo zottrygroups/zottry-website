@@ -1,0 +1,76 @@
+.lotteries-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.lotteries-page__header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.lotteries-page__header h1 {
+  margin-bottom: 0.75rem;
+}
+
+.lotteries-page__header p {
+  margin: 0;
+  color: var(--text-light);
+}
+
+.lotteries-page__grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .lotteries-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.lotteries-page__card {
+  height: 100%;
+}
+
+.lotteries-page__details {
+  margin: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.lotteries-page__details > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.lotteries-page__details dt {
+  font-weight: 600;
+  color: rgba(71, 85, 105, 0.9);
+}
+
+.lotteries-page__details dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.lotteries-page__cta {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .lotteries-page__details > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .lotteries-page__cta {
+    width: 100%;
+  }
+}
