@@ -7,6 +7,93 @@ import "./LoginModal.css";
 const REMEMBERED_CREDENTIALS_KEY = "zottry.auth.rememberedCredentials";
 const ANIMATION_DURATION = 250;
 
+const COUNTRIES = [
+  "United States",
+  "Canada",
+  "United Kingdom",
+  "Australia",
+  "Germany",
+  "France",
+  "Spain",
+  "Italy",
+  "India",
+  "Brazil"
+];
+
+const MINIMUM_AGE = 18;
+
+const EMPTY_REGISTER_FORM = {
+  fullName: "",
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  country: "",
+  dateOfBirth: "",
+  acceptTerms: false
+};
+
+const formatDateForInput = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const calculateAge = (dateString) => {
+  if (!dateString) {
+    return 0;
+  }
+
+  const birthDate = new Date(dateString);
+  if (Number.isNaN(birthDate.getTime())) {
+    return 0;
+  }
+
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+
+  return age;
+};
+
+const computePasswordStrength = (password) => {
+  if (!password) {
+    return "";
+  }
+
+  if (password.length < 8) {
+    return "weak";
+  }
+
+  let score = 0;
+  if (/[a-z]/.test(password)) {
+    score += 1;
+  }
+  if (/[A-Z]/.test(password)) {
+    score += 1;
+  }
+  if (/[0-9]/.test(password)) {
+    score += 1;
+  }
+  if (/[^A-Za-z0-9]/.test(password)) {
+    score += 1;
+  }
+
+  if (score >= 3) {
+    return "strong";
+  }
+
+  if (score === 2) {
+    return "medium";
+  }
+
+  return "weak";
+};
+
 const getStorage = () => {
   if (typeof window === "undefined") {
     return null;
@@ -59,7 +146,14 @@ const clearRememberedCredentials = () => {
 function LoginModal() {
   const navigate = useNavigate();
   const { isLoginOpen, closeLoginModal, activeView, setActiveView, modalMessage } = useLoginModal();
-  const { user, login, register: registerUser, demoCredentials, isAuthenticating } = useAuth();
+  const {
+    user,
+    login,
+    register: registerUser,
+    logout,
+    demoCredentials,
+    isAuthenticating
+  } = useAuth();
   const [shouldRender, setShouldRender] = useState(false);
   const [animationState, setAnimationState] = useState("idle");
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -67,19 +161,54 @@ function LoginModal() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
-  const [registerForm, setRegisterForm] = useState({
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+  const [registerForm, setRegisterForm] = useState({ ...EMPTY_REGISTER_FORM });
   const [registerErrors, setRegisterErrors] = useState({});
   const [registerError, setRegisterError] = useState("");
   const [registerStatus, setRegisterStatus] = useState("");
+  const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
   const dialogRef = useRef(null);
   const closingTimerRef = useRef(null);
   const rafRef = useRef(null);
 
   const emailPattern = useMemo(() => /[^\s@]+@[^\s@]+\.[^\s@]+/, []);
+  const todayISO = useMemo(() => formatDateForInput(new Date()), []);
+  const passwordStrength = useMemo(
+    () => computePasswordStrength(registerForm.password),
+    [registerForm.password]
+  );
+  const isRegisterFormReady = useMemo(() => {
+    const fullName = registerForm.fullName.trim();
+    const username = registerForm.username.trim();
+    const email = registerForm.email.trim();
+    const country = registerForm.country.trim();
+    const dateOfBirth = registerForm.dateOfBirth;
+
+    if (!fullName || !username || !email || !country || !dateOfBirth) {
+      return false;
+    }
+
+    if (!registerForm.password || !registerForm.confirmPassword) {
+      return false;
+    }
+
+    if (!registerForm.acceptTerms) {
+      return false;
+    }
+
+    if (!emailPattern.test(email)) {
+      return false;
+    }
+
+    if (registerForm.password.length < 8) {
+      return false;
+    }
+
+    if (registerForm.password !== registerForm.confirmPassword) {
+      return false;
+    }
+
+    return calculateAge(dateOfBirth) >= MINIMUM_AGE;
+  }, [registerForm, emailPattern]);
 
   useEffect(() => {
     if (isLoginOpen) {
@@ -123,10 +252,11 @@ function LoginModal() {
       setLoginErrors({});
       setLoginError("");
       setLoginStatus("");
-      setRegisterForm({ email: "", password: "", confirmPassword: "" });
+      setRegisterForm({ ...EMPTY_REGISTER_FORM });
       setRegisterErrors({});
       setRegisterError("");
       setRegisterStatus("");
+      setShowRegisterSuccess(false);
       setRememberMe(false);
       return;
     }
@@ -189,10 +319,10 @@ function LoginModal() {
   }, [shouldRender, activeView]);
 
   useEffect(() => {
-    if (user && isLoginOpen) {
+    if (user && isLoginOpen && activeView === "login" && !showRegisterSuccess) {
       closeLoginModal();
     }
-  }, [user, isLoginOpen, closeLoginModal]);
+  }, [user, isLoginOpen, activeView, showRegisterSuccess, closeLoginModal]);
 
   const handleOverlayMouseDown = (event) => {
     if (event.target === event.currentTarget) {
@@ -277,10 +407,10 @@ function LoginModal() {
   };
 
   const handleRegisterChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
     setRegisterForm((previous) => ({
       ...previous,
-      [name]: value
+      [name]: type === "checkbox" ? checked : value
     }));
 
     if (registerErrors[name]) {
@@ -290,6 +420,16 @@ function LoginModal() {
 
   const validateRegister = () => {
     const nextErrors = {};
+
+    if (!registerForm.fullName.trim()) {
+      nextErrors.fullName = "Please enter your full name.";
+    }
+
+    if (!registerForm.username.trim()) {
+      nextErrors.username = "Choose a username for your profile.";
+    } else if (registerForm.username.trim().length < 3) {
+      nextErrors.username = "Usernames need at least 3 characters.";
+    }
 
     if (!registerForm.email.trim()) {
       nextErrors.email = "Please enter an email address.";
@@ -309,6 +449,20 @@ function LoginModal() {
       nextErrors.confirmPassword = "Passwords need to match exactly.";
     }
 
+    if (!registerForm.country.trim()) {
+      nextErrors.country = "Select your country.";
+    }
+
+    if (!registerForm.dateOfBirth) {
+      nextErrors.dateOfBirth = "Enter your date of birth.";
+    } else if (calculateAge(registerForm.dateOfBirth) < MINIMUM_AGE) {
+      nextErrors.dateOfBirth = "You must be at least 18 years old to register.";
+    }
+
+    if (!registerForm.acceptTerms) {
+      nextErrors.acceptTerms = "You must confirm you are 18+ and accept the policies.";
+    }
+
     setRegisterErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -322,19 +476,34 @@ function LoginModal() {
       return;
     }
 
-    const result = await registerUser({
+    const trimmedFullName = registerForm.fullName.trim();
+    const [firstName = "", ...rest] = trimmedFullName.split(/\s+/);
+    const payload = {
       email: registerForm.email.trim(),
-      password: registerForm.password
-    });
+      password: registerForm.password,
+      username: registerForm.username.trim(),
+      fullName: trimmedFullName,
+      firstName,
+      lastName: rest.join(" "),
+      country: registerForm.country.trim(),
+      dateOfBirth: registerForm.dateOfBirth
+    };
+
+    const result = await registerUser(payload);
 
     if (!result.ok) {
       setRegisterError(result.message);
       return;
     }
 
-    setRegisterStatus("Account created. You're all set!");
-    setActiveView("login");
-    closeLoginModal();
+    setRegisterForm({ ...EMPTY_REGISTER_FORM });
+    setRegisterErrors({});
+    setRegisterStatus("Account created successfully. Please verify your email before logging in.");
+    setShowRegisterSuccess(true);
+
+    if (typeof logout === "function") {
+      await logout();
+    }
   };
 
   const handleForgotPassword = () => {
@@ -351,11 +520,18 @@ function LoginModal() {
       setRegisterErrors({});
       setRegisterError("");
       setRegisterStatus("");
+      setShowRegisterSuccess(false);
     } else {
       setLoginErrors({});
       setLoginError("");
       setLoginStatus("");
     }
+  };
+
+  const handleRegisterSuccessContinue = () => {
+    setShowRegisterSuccess(false);
+    setRegisterStatus("");
+    setActiveView("login");
   };
 
   if (!shouldRender) {
@@ -538,7 +714,7 @@ function LoginModal() {
             className="login-modal__panel"
           >
             <p>Create your account to start playing Zottry.</p>
-            {registerStatus && (
+            {registerStatus && !showRegisterSuccess && (
               <div className="login-modal__status" role="status" aria-live="polite">
                 {registerStatus}
               </div>
@@ -549,6 +725,46 @@ function LoginModal() {
               </div>
             )}
             <form className="login-modal__form" onSubmit={handleRegisterSubmit} noValidate>
+              <label htmlFor="register-modal-full-name">Full name</label>
+              <input
+                type="text"
+                id="register-modal-full-name"
+                name="fullName"
+                placeholder="Your full name"
+                value={registerForm.fullName}
+                onChange={handleRegisterChange}
+                aria-invalid={Boolean(registerErrors.fullName)}
+                aria-describedby={
+                  registerErrors.fullName ? "register-modal-full-name-error" : undefined
+                }
+                required
+              />
+              {registerErrors.fullName && (
+                <p className="login-modal__field-error" id="register-modal-full-name-error" role="alert">
+                  {registerErrors.fullName}
+                </p>
+              )}
+
+              <label htmlFor="register-modal-username">Username</label>
+              <input
+                type="text"
+                id="register-modal-username"
+                name="username"
+                placeholder="Pick a display name"
+                value={registerForm.username}
+                onChange={handleRegisterChange}
+                aria-invalid={Boolean(registerErrors.username)}
+                aria-describedby={
+                  registerErrors.username ? "register-modal-username-error" : undefined
+                }
+                required
+              />
+              {registerErrors.username && (
+                <p className="login-modal__field-error" id="register-modal-username-error" role="alert">
+                  {registerErrors.username}
+                </p>
+              )}
+
               <label htmlFor="register-modal-email">Email</label>
               <input
                 type="email"
@@ -583,6 +799,19 @@ function LoginModal() {
                 }
                 required
               />
+              {registerForm.password && (
+                <p
+                  className={`login-modal__password-strength login-modal__password-strength--${passwordStrength}`}
+                  role="status"
+                  aria-live="polite"
+                >
+                  Password strength: {passwordStrength === "strong"
+                    ? "Strong"
+                    : passwordStrength === "medium"
+                    ? "Medium"
+                    : "Weak"}
+                </p>
+              )}
               {registerErrors.password && (
                 <p className="login-modal__field-error" id="register-modal-password-error" role="alert">
                   {registerErrors.password}
@@ -613,16 +842,106 @@ function LoginModal() {
                 </p>
               )}
 
+              <label htmlFor="register-modal-country">Country</label>
+              <select
+                id="register-modal-country"
+                name="country"
+                value={registerForm.country}
+                onChange={handleRegisterChange}
+                aria-invalid={Boolean(registerErrors.country)}
+                aria-describedby={
+                  registerErrors.country ? "register-modal-country-error" : undefined
+                }
+                required
+              >
+                <option value="">Select your country</option>
+                {COUNTRIES.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+              {registerErrors.country && (
+                <p className="login-modal__field-error" id="register-modal-country-error" role="alert">
+                  {registerErrors.country}
+                </p>
+              )}
+
+              <label htmlFor="register-modal-dob">Date of birth</label>
+              <input
+                type="date"
+                id="register-modal-dob"
+                name="dateOfBirth"
+                value={registerForm.dateOfBirth}
+                onChange={handleRegisterChange}
+                max={todayISO}
+                aria-invalid={Boolean(registerErrors.dateOfBirth)}
+                aria-describedby={
+                  registerErrors.dateOfBirth ? "register-modal-dob-error" : undefined
+                }
+                required
+              />
+              {registerErrors.dateOfBirth && (
+                <p className="login-modal__field-error" id="register-modal-dob-error" role="alert">
+                  {registerErrors.dateOfBirth}
+                </p>
+              )}
+
+              <label className="login-modal__checkbox">
+                <input
+                  type="checkbox"
+                  id="register-modal-terms"
+                  name="acceptTerms"
+                  checked={registerForm.acceptTerms}
+                  onChange={handleRegisterChange}
+                  aria-invalid={Boolean(registerErrors.acceptTerms)}
+                  aria-describedby={
+                    registerErrors.acceptTerms ? "register-modal-terms-error" : undefined
+                  }
+                  required
+                />
+                <span>I confirm I am 18+ and accept the Terms & Privacy Policy</span>
+              </label>
+              {registerErrors.acceptTerms && (
+                <p className="login-modal__field-error" id="register-modal-terms-error" role="alert">
+                  {registerErrors.acceptTerms}
+                </p>
+              )}
+
               <div className="login-modal__actions">
                 <button
                   type="submit"
                   className="login-modal__register-btn"
-                  disabled={isAuthenticating}
+                  disabled={isAuthenticating || !isRegisterFormReady}
                 >
-                  {isAuthenticating ? "Creating..." : "Register"}
+                  {isAuthenticating ? "Creating..." : "Create Account"}
                 </button>
               </div>
             </form>
+            {showRegisterSuccess && (
+              <div
+                className="login-modal__success-overlay"
+                role="alertdialog"
+                aria-live="assertive"
+                aria-modal="true"
+                aria-labelledby="register-success-title"
+                aria-describedby="register-success-message"
+              >
+                <div className="login-modal__success-card">
+                  <h3 id="register-success-title">Account created</h3>
+                  <p id="register-success-message">
+                    Account created successfully. Please verify your email before logging in.
+                  </p>
+                  <button
+                    type="button"
+                    className="login-modal__primary-btn"
+                    onClick={handleRegisterSuccessContinue}
+                  >
+                    Go to login
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

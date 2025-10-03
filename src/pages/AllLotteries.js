@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LotteryCard from "../components/LotteryCard";
 import { useLotteryData } from "../context/LotteryDataContext";
 import { toPriceValue } from "../services/lotteryService";
+import { getLotteryCtaLabel, getLotteryRoute } from "../constants/lotteries";
 import "./AllLotteries.css";
 
 function AllLotteries() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { lotteries, loading, error } = useLotteryData();
   const [searchTerm, setSearchTerm] = useState("");
   const [priceFilter, setPriceFilter] = useState("any");
@@ -93,8 +95,12 @@ function AllLotteries() {
       }
     });
 
-    return next;
-  }, [lotteries, searchTerm, cadenceFilter, priceFilter, sortOrder]);
+    return next.map((lottery) => ({
+      ...lottery,
+      ctaLabel: getLotteryCtaLabel(lottery.title),
+      onAction: () => navigate(getLotteryRoute(lottery.id))
+    }));
+  }, [lotteries, searchTerm, cadenceFilter, priceFilter, sortOrder, navigate]);
 
   return (
     <div className="page all-lotteries">
@@ -180,11 +186,7 @@ function AllLotteries() {
       <section className="lottery-grid">
         {filteredLotteries.length ? (
           filteredLotteries.map((lottery) => (
-            <LotteryCard
-              key={lottery.id}
-              {...lottery}
-              ctaLabel="Play now"
-            />
+            <LotteryCard key={lottery.id} {...lottery} />
           ))
         ) : (
           <div className="empty-state" role="status">

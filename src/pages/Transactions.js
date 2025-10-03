@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import Card from "../components/ui/Card";
+import DataTable from "../components/ui/DataTable";
 import "../styles/account.css";
 
 const transactionData = [
@@ -6,61 +8,129 @@ const transactionData = [
     orderId: "ZDEP-001245",
     type: "Deposit",
     date: "2024-05-24",
-    amount: "+$50.00",
+    amount: 50,
     status: "Settled",
-    balance: "$188.50",
+    balance: 188.5,
     description: "Deposit via Visa ending 4412"
   },
   {
     orderId: "ZSP-000981",
     type: "Ticket Purchase — Spark",
     date: "2024-05-22",
-    amount: "-$1.00",
+    amount: -1,
     status: "Settled",
-    balance: "$187.50",
+    balance: 187.5,
     description: "Spark daily draw ticket"
   },
   {
     orderId: "ZWIN-000652",
     type: "Win — Spark",
     date: "2024-05-22",
-    amount: "+$12.00",
+    amount: 12,
     status: "Settled",
-    balance: "$199.50",
+    balance: 199.5,
     description: "Spark prize credited to wallet"
   },
   {
     orderId: "ZBL-000742",
     type: "Ticket Purchase — Blaze",
     date: "2024-05-19",
-    amount: "-$2.50",
+    amount: -2.5,
     status: "Settled",
-    balance: "$197.00",
+    balance: 197,
     description: "Blaze five-day draw ticket"
   },
   {
     orderId: "ZWD-000318",
     type: "Withdrawal",
     date: "2024-05-18",
-    amount: "-$25.00",
+    amount: -25,
     status: "Pending",
-    balance: "$172.00",
+    balance: 172,
     description: "Withdrawal via Local Transfer"
   },
   {
     orderId: "ZLG-000514",
     type: "Ticket Purchase — Legend",
     date: "2024-05-01",
-    amount: "-$5.00",
+    amount: -5,
     status: "Settled",
-    balance: "$220.50",
+    balance: 220.5,
     description: "Legend monthly draw ticket"
+  }
+];
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  }).format(value);
+
+const columns = [
+  {
+    key: "type",
+    header: "Type",
+    render: (row) => (
+      <div>
+        <strong>{row.type}</strong>
+        <p className="transaction-note">{row.description}</p>
+      </div>
+    )
+  },
+  {
+    key: "date",
+    header: "Date",
+    render: (row) => {
+      const date = new Date(row.date);
+      if (Number.isNaN(date.getTime())) {
+        return row.date;
+      }
+      return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+  },
+  {
+    key: "amount",
+    header: "Amount",
+    align: "right",
+    render: (row) => (
+      <span
+        className={`transaction-amount ${row.amount >= 0 ? "transaction-amount--credit" : "transaction-amount--debit"}`.trim()}
+      >
+        {row.amount >= 0 ? "+" : ""}
+        {formatCurrency(Math.abs(row.amount))}
+      </span>
+    )
+  },
+  {
+    key: "status",
+    header: "Status",
+    render: (row) => {
+      const statusClassName =
+        row.status === "Pending"
+          ? "account-status account-status--pending"
+          : row.status === "Failed"
+          ? "account-status account-status--failed"
+          : "account-status";
+      return <span className={statusClassName}>{row.status}</span>;
+    }
+  },
+  {
+    key: "balance",
+    header: "Balance",
+    align: "right",
+    render: (row) => formatCurrency(row.balance)
   }
 ];
 
 function Transactions() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+
   const results = useMemo(() => {
     return transactionData.filter((transaction) => {
       if (dateFrom && transaction.date < dateFrom) {
@@ -77,10 +147,10 @@ function Transactions() {
     <div className="account-page">
       <header className="account-page__header">
         <h1>Transaction History</h1>
-        <p>Review your deposits, ticket purchases, and payouts in one place.</p>
+        <p>Review your deposits, withdrawals, wins, and ticket purchases.</p>
       </header>
 
-      <form className="account-card" onSubmit={(event) => event.preventDefault()}>
+      <Card title="Filter by date" spacing="compact" as="form" onSubmit={(event) => event.preventDefault()}>
         <div className="account-transaction-filters">
           <label htmlFor="date-from">
             From
@@ -101,64 +171,22 @@ function Transactions() {
             />
           </label>
           <button type="submit" className="account-button">
-            Search
+            Apply
           </button>
         </div>
-        <div className="account-transaction-actions">
-          <button type="button">View PDF</button>
-          <button type="button">View CSV</button>
-        </div>
-      </form>
+      </Card>
 
-      <div className="account-card" role="region" aria-live="polite">
-        <table className="account-results-table">
-          <thead>
-            <tr>
-              <th scope="col">Order ID</th>
-              <th scope="col">Type</th>
-              <th scope="col">Date</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Status</th>
-              <th scope="col">Updated Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((transaction) => {
-              const statusClassName =
-                transaction.status === "Pending"
-                  ? "account-status account-status--pending"
-                  : transaction.status === "Failed"
-                  ? "account-status account-status--failed"
-                  : "account-status";
-
-              return (
-                <tr key={transaction.orderId}>
-                  <td>
-                    <strong>{transaction.orderId}</strong>
-                    <p style={{ margin: "0.25rem 0 0", color: "rgba(71, 85, 105, 0.8)" }}>
-                      {transaction.description}
-                    </p>
-                  </td>
-                  <td>{transaction.type}</td>
-                  <td>{transaction.date}</td>
-                  <td>{transaction.amount}</td>
-                  <td>
-                    <span className={statusClassName}>{transaction.status}</span>
-                  </td>
-                  <td>{transaction.balance}</td>
-                </tr>
-              );
-            })}
-            {results.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "1.5rem" }}>
-                  No transactions found for the selected range.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <Card title="Wallet movements" description="Up to 50 of your latest transactions." role="region" aria-live="polite">
+        <DataTable
+          columns={columns}
+          rows={results}
+          enablePagination
+          pageSize={5}
+          getRowKey={(row) => row.orderId}
+          ariaLabel="Transaction history"
+          emptyMessage="No transactions found for the selected range."
+        />
+      </Card>
     </div>
   );
 }

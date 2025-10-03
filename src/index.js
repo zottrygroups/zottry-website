@@ -5,15 +5,18 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { LoginModalProvider } from './context/LoginModalContext';
 import { LotteryDataProvider } from './context/LotteryDataContext';
+import { WalletProvider } from './context/WalletContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <LoginModalProvider>
       <AuthProvider>
-        <LotteryDataProvider>
-          <App />
-        </LotteryDataProvider>
+        <WalletProvider>
+          <LotteryDataProvider>
+            <App />
+          </LotteryDataProvider>
+        </WalletProvider>
       </AuthProvider>
     </LoginModalProvider>
   </React.StrictMode>

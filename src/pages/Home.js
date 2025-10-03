@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import LotteryCard from "../components/LotteryCard";
 import { featuredWinners, landingBanners } from "../data/lotteryData";
 import { useLotteryData } from "../context/LotteryDataContext";
+import { getLotteryRoute, getLotteryCtaLabel } from "../constants/lotteries";
 import "./Home.css";
 
 const initialScrollState = {
@@ -39,7 +40,15 @@ function Home() {
   const winnersScrollerRef = useRef(null);
   const bannerTrackRef = useRef(null);
 
-  const draws = useMemo(() => lotteries, [lotteries]);
+  const draws = useMemo(
+    () =>
+      lotteries.map((lottery) => ({
+        ...lottery,
+        ctaLabel: getLotteryCtaLabel(lottery.title),
+        onAction: () => navigate(getLotteryRoute(lottery.id))
+      })),
+    [lotteries, navigate]
+  );
   const hasDraws = draws.length > 0;
   const winners = featuredWinners;
   const hasWinners = winners.length > 0;
@@ -315,11 +324,11 @@ function Home() {
   }, [banners.length]);
 
   const handleBannerCta = (banner) => {
-    navigate("/all-lotteries", { state: { highlight: banner.lotteryId } });
+    navigate(getLotteryRoute(banner.lotteryId));
   };
 
   const handlePlayNow = () => {
-    navigate("/all-lotteries", { state: { highlight: "featured" } });
+    navigate("/lotteries");
   };
 
   return (
@@ -359,7 +368,7 @@ function Home() {
                       >
                         {banner.ctaLabel}
                       </button>
-                      <Link className="btn btn-outline" to="/all-lotteries">
+                      <Link className="btn btn-outline" to="/lotteries">
                         Explore Lotteries
                       </Link>
                     </div>

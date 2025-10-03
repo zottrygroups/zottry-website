@@ -51,6 +51,16 @@
   gap: 1rem;
 }
 
+.account-card--compact {
+  padding: 1.1rem 1.25rem;
+  gap: 0.75rem;
+}
+
+.account-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
 .account-card__header {
   display: flex;
   justify-content: space-between;
@@ -67,6 +77,13 @@
   margin: -0.4rem 0 0;
   color: rgba(71, 85, 105, 0.85);
   font-size: 0.95rem;
+}
+
+.account-card__actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .account-avatar {
@@ -204,18 +221,23 @@
   box-shadow: 0 8px 16px rgba(11, 61, 145, 0.12);
 }
 
-.account-results-table {
+.account-results-table,
+.data-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .account-results-table th,
-.account-results-table td {
+.account-results-table td,
+.data-table th,
+.data-table td {
   padding: 0.75rem 1rem;
   text-align: left;
+  vertical-align: middle;
 }
 
-.account-results-table thead {
+.account-results-table thead,
+.data-table thead {
   background: rgba(11, 61, 145, 0.08);
   color: #0b3d91;
   font-size: 0.9rem;
@@ -223,13 +245,56 @@
   letter-spacing: 0.03em;
 }
 
-.account-results-table tbody tr {
+.account-results-table tbody tr,
+.data-table tbody tr {
   background: #ffffff;
   border-top: 1px solid rgba(226, 232, 240, 0.9);
 }
 
-.account-results-table tbody tr:hover {
+.account-results-table tbody tr:hover,
+.data-table tbody tr:hover {
   background: rgba(249, 250, 251, 0.75);
+}
+
+.data-table__container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table__empty {
+  text-align: center;
+  padding: 1.75rem 1rem;
+  color: rgba(71, 85, 105, 0.85);
+}
+
+.data-table__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0.25rem 0;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.data-table__pagination button {
+  border-radius: 999px;
+  border: 1px solid rgba(11, 61, 145, 0.25);
+  background: #ffffff;
+  color: #0b3d91;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.data-table__pagination button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.data-table__pagination button:not([disabled]):hover,
+.data-table__pagination button:not([disabled]):focus-visible {
+  background: rgba(11, 61, 145, 0.08);
 }
 
 .account-pill {
@@ -274,6 +339,157 @@
 .account-winning-numbers::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.6);
   border-radius: 999px;
+}
+
+.transaction-note {
+  margin: 0.2rem 0 0;
+  color: rgba(71, 85, 105, 0.85);
+  font-size: 0.9rem;
+}
+
+.transaction-amount {
+  font-weight: 600;
+}
+
+.transaction-amount--credit {
+  color: #16a34a;
+}
+
+.transaction-amount--debit {
+  color: #d0003a;
+}
+
+.limits-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+  color: rgba(55, 65, 81, 0.9);
+}
+
+.limits-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 880px) {
+  .limits-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+
+.limits-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.limits-fields {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.limits-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: rgba(31, 41, 55, 0.9);
+}
+
+.limits-field input {
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.limits-field input:focus {
+  outline: none;
+  border-color: #0b3d91;
+  box-shadow: 0 0 0 2px rgba(11, 61, 145, 0.2);
+}
+
+.limits-feedback {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.limits-feedback--success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.limits-feedback--error {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+}
+
+.limits-summary {
+  margin: 0;
+  font-weight: 600;
+  color: rgba(31, 41, 55, 0.85);
+}
+
+.lottery-overview {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .lottery-overview {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.lottery-overview__label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: rgba(71, 85, 105, 0.85);
+}
+
+.lottery-overview__value {
+  margin: 0.25rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0b3d91;
+}
+
+.lottery-countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .lottery-countdown {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.lottery-countdown__label {
+  font-weight: 600;
+  color: rgba(31, 41, 55, 0.85);
+}
+
+.lottery-countdown__value {
+  font-size: 1.15rem;
+  color: #ff7a00;
+}
+
+.lottery-rules {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 0.65rem;
+  color: rgba(55, 65, 81, 0.9);
 }
 
 .account-transaction-filters {
@@ -366,6 +582,146 @@
   gap: 0.6rem;
   font-size: 0.95rem;
   color: rgba(55, 65, 81, 0.9);
+}
+
+.withdrawal-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.withdrawal-label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgba(71, 85, 105, 0.9);
+}
+
+.withdrawal-amount {
+  margin: 0.2rem 0 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #0b3d91;
+}
+
+.withdrawal-option__description {
+  margin: 0.35rem 0 0.4rem;
+  color: rgba(71, 85, 105, 0.85);
+}
+
+.withdrawal-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: rgba(31, 41, 55, 0.9);
+  margin-top: 1rem;
+}
+
+.withdrawal-input input {
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  font-weight: 500;
+}
+
+.withdrawal-input input:focus {
+  outline: none;
+  border-color: #0b3d91;
+  box-shadow: 0 0 0 2px rgba(11, 61, 145, 0.2);
+}
+
+.withdrawal-help-text {
+  margin: -0.35rem 0 0.85rem;
+  color: rgba(71, 85, 105, 0.75);
+  font-size: 0.9rem;
+}
+
+.withdrawal-feedback {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.withdrawal-feedback--success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.withdrawal-feedback--error {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+}
+
+.withdrawal-error {
+  margin: 0 0 0.75rem;
+  color: #d0003a;
+  font-weight: 600;
+}
+
+.withdrawal-tips {
+  margin: 0.1rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+  color: rgba(55, 65, 81, 0.9);
+}
+
+.self-exclusion-options {
+  display: grid;
+  gap: 1rem;
+}
+
+.self-exclusion-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(11, 61, 145, 0.04);
+  align-items: flex-start;
+}
+
+.self-exclusion-option input {
+  margin-top: 0.35rem;
+}
+
+.self-exclusion-option strong {
+  font-size: 1rem;
+}
+
+.self-exclusion-option p {
+  margin: 0.35rem 0 0;
+  color: rgba(71, 85, 105, 0.85);
+}
+
+.self-exclusion-feedback {
+  margin: 1rem 0 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.self-exclusion-feedback--success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.self-exclusion-active {
+  margin: 0;
+  font-weight: 600;
+  color: rgba(15, 27, 61, 0.85);
+}
+
+.self-exclusion-support {
+  margin: 0;
+  color: rgba(55, 65, 81, 0.85);
 }
 
 .account-transaction-actions {

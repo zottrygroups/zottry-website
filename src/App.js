@@ -22,6 +22,16 @@ import VerifyCode from "./pages/VerifyCode";
 import ResetPassword from "./pages/ResetPassword";
 import LoginModal from "./components/LoginModal";
 import { useAuth } from "./context/AuthContext";
+import LotteryIndex from "./pages/lotteries";
+import Spark from "./pages/lotteries/Spark";
+import Pulse from "./pages/lotteries/Pulse";
+import Blaze from "./pages/lotteries/Blaze";
+import Cosmo from "./pages/lotteries/Cosmo";
+import Legend from "./pages/lotteries/Legend";
+import About from "./pages/static/About";
+import Terms from "./pages/static/Terms";
+import Privacy from "./pages/static/Privacy";
+import ResponsiblePlay from "./pages/static/ResponsiblePlay";
 
 function SessionRedirector() {
   const { user, lastAction } = useAuth();
@@ -46,9 +56,15 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/all-lotteries" element={<AllLotteries />} />
+          <Route path="/lotteries" element={<LotteryIndex />} />
           <Route path="/lottery-results" element={<LotteryResults />} />
           <Route path="/my-offers" element={<MyOffers />} />
           <Route path="/promotions" element={<Promotions />} />
+          <Route path="/spark" element={<Spark />} />
+          <Route path="/pulse" element={<Pulse />} />
+          <Route path="/blaze" element={<Blaze />} />
+          <Route path="/cosmo" element={<Cosmo />} />
+          <Route path="/legend" element={<Legend />} />
           <Route path="/how-to-play" element={<HowToPlay />} />
           <Route path="/rules" element={<Rules />} />
           <Route path="/contact" element={<Contact />} />
@@ -111,6 +127,10 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/responsible-play" element={<ResponsiblePlay />} />
         </Routes>
       </main>
       <Footer />

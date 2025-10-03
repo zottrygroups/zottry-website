@@ -1,0 +1,214 @@
+.lottery-page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3.5rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.lottery-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.12), rgba(249, 200, 14, 0.16));
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.12);
+}
+
+.lottery-hero__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.lottery-hero__title {
+  margin: 0.4rem 0 0.35rem;
+  font-size: 2.25rem;
+  color: #0b3d91;
+}
+
+.lottery-hero__tagline {
+  margin: 0;
+  font-size: 1.05rem;
+  color: rgba(15, 23, 42, 0.8);
+}
+
+.lottery-hero__back {
+  text-decoration: none;
+  font-weight: 600;
+  color: #0b3d91;
+}
+
+.lottery-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .lottery-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.lottery-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 26px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lottery-card__title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #0b3d91;
+}
+
+.lottery-prize-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lottery-prize-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lottery-prize-list__label {
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.75);
+}
+
+.lottery-prize-list__value {
+  font-weight: 700;
+  color: #0b3d91;
+}
+
+.lottery-countdown-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 16px 26px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.lottery-countdown-card__label {
+  font-weight: 600;
+  color: rgba(15, 23, 42, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+}
+
+.lottery-countdown-card__values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.lottery-countdown-card__segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(11, 61, 145, 0.08);
+  border-radius: 16px;
+  padding: 0.85rem 0.65rem;
+}
+
+.lottery-countdown-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0b3d91;
+}
+
+.lottery-countdown-card__caption {
+  font-size: 0.75rem;
+  color: rgba(15, 23, 42, 0.75);
+  text-transform: uppercase;
+}
+
+.lottery-countdown-card__status {
+  margin: 0;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.lottery-steps {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.4rem;
+  color: rgba(15, 23, 42, 0.8);
+}
+
+.lottery-cta {
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f9c80e, #ff7a00);
+  color: #0b1120;
+  padding: 0.75rem 1.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.lottery-cta:hover,
+.lottery-cta:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(255, 122, 0, 0.25);
+}
+
+.lottery-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 26px rgba(15, 23, 42, 0.12);
+}
+
+.lottery-results-table th,
+.lottery-results-table td {
+  padding: 0.9rem 1.25rem;
+  text-align: left;
+}
+
+.lottery-results-table thead {
+  background: rgba(11, 61, 145, 0.1);
+  color: #0b3d91;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.lottery-results-table tbody tr + tr {
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+@media (max-width: 640px) {
+  .lottery-page {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .lottery-countdown-card__values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import { useAuth } from "../context/AuthContext";
 import { useLoginModal } from "../context/LoginModalContext";
+import { useWallet } from "../context/WalletContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import "./Navbar.css";
 
@@ -83,7 +84,7 @@ function CaretIcon({ expanded = false }) {
 }
 
 const navItems = [
-  { to: "/all-lotteries", label: "All Lotteries" },
+  { to: "/lotteries", label: "All Lotteries" },
   { to: "/lottery-results", label: "Lottery Results" },
   { to: "/my-offers", label: "My Offers" },
   { to: "/promotions", label: "Promotions" }
@@ -103,6 +104,7 @@ function Navbar() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout, isAuthenticating } = useAuth();
+  const { formattedBalance } = useWallet();
   const accountMenuRef = useRef(null);
   const { openLoginModal } = useLoginModal();
   const navigate = useNavigate();
@@ -168,7 +170,7 @@ function Navbar() {
   }, [accountMenuOpen]);
 
   const displayName = user?.name?.trim() || user?.email || "Player";
-  const balanceDisplay = "$15.48";
+  const balanceDisplay = formattedBalance || "$0.00";
 
   return (
     <header className="site-header">
