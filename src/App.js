@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -48,7 +48,7 @@ function SessionRedirector() {
 
 function App() {
   return (
-    <Router>
+    <>
       <Navbar />
       <SessionRedirector />
       <LoginModal />
@@ -134,7 +134,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
-    </Router>
+    </>
   );
 }
 
