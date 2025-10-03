@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useLoginModal } from "../context/LoginModalContext";
 import "./AuthLayout.css";
 
 function ResetPassword() {
@@ -9,6 +10,7 @@ function ResetPassword() {
   const [errors, setErrors] = useState({});
   const [statusMessage, setStatusMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { openLoginModal } = useLoginModal();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -36,7 +38,8 @@ function ResetPassword() {
 
     window.setTimeout(() => {
       setIsSubmitting(false);
-      navigate("/login", { state: { email } });
+      navigate("/", { replace: true });
+      openLoginModal("login");
     }, 900);
   };
 
@@ -120,7 +123,14 @@ function ResetPassword() {
           </button>
         </form>
         <p className="auth-callout">
-          Remembered it? <Link to="/login">Return to login</Link>
+          Remembered it?{" "}
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => openLoginModal("login")}
+          >
+            Return to login
+          </button>
         </p>
       </div>
     </div>

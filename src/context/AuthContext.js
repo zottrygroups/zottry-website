@@ -1,27 +1,45 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
+import { registerUser } from "../services/authService";
 import {
   getDemoCredentials,
-  loginUser,
-  logoutUser,
-  registerUser
-} from "../services/authService";
+  getSession as getStoredSession,
+  login as authenticate,
+  logout as clearAuthentication
+} from "../services/mockAuth";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => getStoredSession());
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [lastAction, setLastAction] = useState(null);
 
   const login = async (credentials) => {
     setIsAuthenticating(true);
     try {
-      const result = await loginUser(credentials);
-      setUser(result.user);
+      const account = authenticate(credentials.email, credentials.password);
+
+      if (!account) {
+        return {
+          ok: false,
+          message: "We couldn't match those login details."
+        };
+      }
+
+      setUser(account);
       setLastAction({ type: "login", at: Date.now() });
-      return { ok: true, user: result.user };
+      return { ok: true, user: account };
     } catch (error) {
-      return { ok: false, message: error.message };
+      return {
+        ok: false,
+        message: error.message || "We couldn't match those login details."
+      };
     } finally {
       setIsAuthenticating(false);
     }
@@ -44,7 +62,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     setIsAuthenticating(true);
     try {
-      await logoutUser();
+      clearAuthentication();
       setUser(null);
       setLastAction({ type: "logout", at: Date.now() });
       return { ok: true };
@@ -67,6 +85,21 @@ export function AuthProvider({ children }) {
     }),
     [user, isAuthenticating, lastAction]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleStorageChange = () => {
+      setUser(getStoredSession());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

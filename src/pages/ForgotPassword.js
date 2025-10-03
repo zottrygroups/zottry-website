@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useLoginModal } from "../context/LoginModalContext";
 import "./AuthLayout.css";
 
 function ForgotPassword() {
   const navigate = useNavigate();
+  const { openLoginModal } = useLoginModal();
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +79,14 @@ function ForgotPassword() {
           </button>
         </form>
         <p className="auth-callout">
-          Remembered your password? <Link to="/login">Go back to login</Link>
+          Remembered your password?{" "}
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => openLoginModal("login")}
+          >
+            Go back to login
+          </button>
         </p>
       </div>
     </div>

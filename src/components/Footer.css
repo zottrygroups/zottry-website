@@ -82,8 +82,7 @@
     width: 100%;
   }
 
-  .footer-actions .btn,
-  .footer-actions .language-switcher {
+  .footer-actions .btn {
     width: 100%;
     justify-content: center;
   }

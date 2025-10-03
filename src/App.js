@@ -10,16 +10,22 @@ import Promotions from "./pages/Promotions";
 import HowToPlay from "./pages/HowToPlay";
 import Rules from "./pages/Rules";
 import Contact from "./pages/Contact";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Results from "./pages/Results";
+import Transactions from "./pages/Transactions";
+import Withdrawal from "./pages/Withdrawal";
+import Limits from "./pages/Limits";
+import SelfExclusion from "./pages/SelfExclusion";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyCode from "./pages/VerifyCode";
 import ResetPassword from "./pages/ResetPassword";
+import LoginModal from "./components/LoginModal";
 
 function App() {
   return (
     <Router>
       <Navbar />
+      <LoginModal />
       <main id="main-content" tabIndex="-1">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -30,8 +36,12 @@ function App() {
           <Route path="/how-to-play" element={<HowToPlay />} />
           <Route path="/rules" element={<Rules />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/withdrawal" element={<Withdrawal />} />
+          <Route path="/limits" element={<Limits />} />
+          <Route path="/self-exclusion" element={<SelfExclusion />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
