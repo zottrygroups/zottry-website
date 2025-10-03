@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import { useAuth } from "../context/AuthContext";
 import { useLoginModal } from "../context/LoginModalContext";
@@ -105,10 +105,14 @@ function Navbar() {
   const { user, logout, isAuthenticating } = useAuth();
   const accountMenuRef = useRef(null);
   const { openLoginModal } = useLoginModal();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
+    const result = await logout();
     setAccountMenuOpen(false);
+    if (result?.ok !== false) {
+      navigate("/", { replace: true });
+    }
   };
 
   useEffect(() => {

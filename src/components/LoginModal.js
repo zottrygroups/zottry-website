@@ -58,7 +58,7 @@ const clearRememberedCredentials = () => {
 
 function LoginModal() {
   const navigate = useNavigate();
-  const { isLoginOpen, closeLoginModal, activeView, setActiveView } = useLoginModal();
+  const { isLoginOpen, closeLoginModal, activeView, setActiveView, modalMessage } = useLoginModal();
   const { user, login, register: registerUser, demoCredentials, isAuthenticating } = useAuth();
   const [shouldRender, setShouldRender] = useState(false);
   const [animationState, setAnimationState] = useState("idle");
@@ -402,6 +402,11 @@ function LoginModal() {
         <h2 className="login-modal__title" id="login-modal-title">
           Access your Zottry account
         </h2>
+        {modalMessage && (
+          <div className="login-modal__status" role="alert" aria-live="assertive">
+            {modalMessage}
+          </div>
+        )}
         <div className="login-modal__tabs" role="tablist" aria-label="Authentication options">
           <button
             type="button"

@@ -9,13 +9,13 @@ import { LotteryDataProvider } from './context/LotteryDataContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <LoginModalProvider>
+    <LoginModalProvider>
+      <AuthProvider>
         <LotteryDataProvider>
           <App />
         </LotteryDataProvider>
-      </LoginModalProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </LoginModalProvider>
   </React.StrictMode>
 );
 

@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from "react";
 import { registerUser } from "../services/authService";
@@ -12,6 +13,9 @@ import {
   login as authenticate,
   logout as clearAuthentication
 } from "../services/mockAuth";
+import { useLoginModal } from "./LoginModalContext";
+
+const SESSION_TIMEOUT = 15 * 60 * 1000;
 
 const AuthContext = createContext();
 
@@ -19,6 +23,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getStoredSession());
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [lastAction, setLastAction] = useState(null);
+  const activityTimestampRef = useRef(Date.now());
+  const inactivityTimerRef = useRef(null);
+  const { openLoginModal } = useLoginModal();
 
   const login = async (credentials) => {
     setIsAuthenticating(true);
@@ -34,6 +41,7 @@ export function AuthProvider({ children }) {
 
       setUser(account);
       setLastAction({ type: "login", at: Date.now() });
+      activityTimestampRef.current = Date.now();
       return { ok: true, user: account };
     } catch (error) {
       return {
@@ -51,6 +59,7 @@ export function AuthProvider({ children }) {
       const result = await registerUser(formData);
       setUser(result.user);
       setLastAction({ type: "register", at: Date.now() });
+      activityTimestampRef.current = Date.now();
       return { ok: true, user: result.user };
     } catch (error) {
       return { ok: false, message: error.message };
@@ -100,6 +109,53 @@ export function AuthProvider({ children }) {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const updateActivity = () => {
+      activityTimestampRef.current = Date.now();
+    };
+
+    const events = ["mousemove", "keydown", "click", "touchstart"];
+    events.forEach((event) => window.addEventListener(event, updateActivity, { passive: true }));
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, updateActivity));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      if (inactivityTimerRef.current) {
+        window.clearInterval(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+      return undefined;
+    }
+
+    activityTimestampRef.current = Date.now();
+    inactivityTimerRef.current = window.setInterval(() => {
+      const now = Date.now();
+      if (now - activityTimestampRef.current >= SESSION_TIMEOUT) {
+        window.clearInterval(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+        clearAuthentication();
+        setUser(null);
+        setLastAction({ type: "timeout", at: now });
+        openLoginModal("login", { message: "Your session has expired. Please log in again." });
+      }
+    }, 60 * 1000);
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        window.clearInterval(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+    };
+  }, [user, openLoginModal]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
