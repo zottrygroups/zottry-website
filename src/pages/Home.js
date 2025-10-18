@@ -1,124 +1,531 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import HeroSection from "../components/HeroSection";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LotteryCard from "../components/LotteryCard";
-import { useLoginModal } from "../context/LoginModalContext";
+import { featuredWinners, landingBanners } from "../data/lotteryData";
+import { useLotteryData } from "../context/LotteryDataContext";
+import { getLotteryRoute, getLotteryCtaLabel } from "../constants/lotteries";
+import "./Home.css";
 
-const draws = [
-  {
-    id: "spark",
-    title: "Z-SPARK",
-    frequency: "Daily",
-    price: "$1",
-    prize: "$1,000",
-    description: "High-energy daily draw with instant digital tickets.",
-    route: "/spark"
-  },
-  {
-    id: "pulse",
-    title: "Z-PULSE",
-    frequency: "Every 48 hours",
-    price: "$2",
-    prize: "$10,000",
-    description: "Double the suspense, double the thrill in every 48-hour cycle.",
-    route: "/pulse"
-  },
-  {
-    id: "blaze",
-    title: "Z-BLAZE",
-    frequency: "Every 5 days",
-    price: "$2.50",
-    prize: "$100,000",
-    description: "Mid-week crescendo with blazing-hot prize tiers.",
-    route: "/blaze"
-  },
-  {
-    id: "cosmo",
-    title: "Z-COSMO",
-    frequency: "Wednesdays",
-    price: "$3",
-    prize: "$250,000",
-    description: "Orbit a constellation of rewards with mid-week cosmic wins.",
-    route: "/cosmo"
-  },
-  {
-    id: "legend",
-    title: "Z-LEGEND",
-    frequency: "Every 15 days",
-    price: "$5",
-    prize: "$600,000",
-    description: "Epic jackpots designed for those who dream bigger.",
-    route: "/legend"
+const initialScrollState = {
+  canScrollLeft: false,
+  canScrollRight: false
+};
+
+function formatWinnerDate(isoString) {
+  if (!isoString) {
+    return "";
   }
-];
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) {
+    return isoString;
+  }
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
 
 function Home() {
   const navigate = useNavigate();
-  const { openLoginModal } = useLoginModal();
+  const { lotteries, loading } = useLotteryData();
+  const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+  const [isBannerAnimating, setIsBannerAnimating] = useState(true);
+  const [drawScrollState, setDrawScrollState] = useState(initialScrollState);
+  const [winnerScrollState, setWinnerScrollState] = useState(initialScrollState);
+  const drawScrollerRef = useRef(null);
+  const winnersScrollerRef = useRef(null);
+  const bannerTrackRef = useRef(null);
 
-  const heroHighlight = draws.slice(0, 3).map((draw) => ({
-    label: draw.title,
-    value: draw.prize
-  }));
+  const draws = useMemo(
+    () =>
+      lotteries.map((lottery) => ({
+        ...lottery,
+        ctaLabel: getLotteryCtaLabel(lottery.title),
+        onAction: () => navigate(getLotteryRoute(lottery.id))
+      })),
+    [lotteries, navigate]
+  );
+  const hasDraws = draws.length > 0;
+  const winners = featuredWinners;
+  const hasWinners = winners.length > 0;
+
+  const banners = useMemo(() =>
+    landingBanners.map((banner) => {
+      const lottery = draws.find((draw) => draw.id === banner.lotteryId);
+
+      return {
+        ...banner,
+        ticketText: lottery?.price ?? banner.ticketText,
+        prizeText: lottery?.prize ?? banner.prizeText,
+        frequencyText: lottery?.frequency ?? banner.frequencyText
+      };
+    }),
+    [draws]
+  );
+
+  const slides = useMemo(() => {
+    if (!banners.length) {
+      return [];
+    }
+
+    if (banners.length === 1) {
+      return banners.map((banner, index) => ({
+        data: banner,
+        originalIndex: index,
+        slideKey: `${banner.id}-single`
+      }));
+    }
+
+    const firstClone = {
+      data: banners[0],
+      originalIndex: 0,
+      slideKey: `${banners[0].id}-clone-next`
+    };
+    const lastClone = {
+      data: banners[banners.length - 1],
+      originalIndex: banners.length - 1,
+      slideKey: `${banners[banners.length - 1].id}-clone-prev`
+    };
+
+    return [
+      lastClone,
+      ...banners.map((banner, index) => ({
+        data: banner,
+        originalIndex: index,
+        slideKey: `${banner.id}-${index}`
+      })),
+      firstClone
+    ];
+  }, [banners]);
+
+  useEffect(() => {
+    if (banners.length > 1) {
+      setIsBannerAnimating(false);
+      setActiveBannerIndex(1);
+    } else if (banners.length === 1) {
+      setIsBannerAnimating(false);
+      setActiveBannerIndex(0);
+    } else {
+      setActiveBannerIndex(0);
+    }
+  }, [banners.length]);
+
+  useEffect(() => {
+    if (banners.length <= 1 || slides.length <= 1) {
+      return undefined;
+    }
+
+    const interval = window.setInterval(() => {
+      setIsBannerAnimating(true);
+      setActiveBannerIndex((previous) => {
+        const next = previous + 1;
+        const maxIndex = slides.length - 1;
+        return next > maxIndex ? maxIndex : next;
+      });
+    }, 8000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [banners.length, slides.length]);
+
+  const effectiveActiveIndex = useMemo(() => {
+    if (!banners.length) {
+      return 0;
+    }
+
+    if (banners.length === 1) {
+      return 0;
+    }
+
+    return activeBannerIndex;
+  }, [activeBannerIndex, banners.length]);
+
+  const resolvedActiveIndex = banners.length > 1 ? effectiveActiveIndex : 0;
+  const realBannerIndex = banners.length
+    ? (banners.length > 1
+        ? (resolvedActiveIndex - 1 + banners.length) % banners.length
+        : 0)
+    : 0;
+
+  useEffect(() => {
+    if (!isBannerAnimating) {
+      const frame = window.requestAnimationFrame(() => {
+        setIsBannerAnimating(true);
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, [isBannerAnimating]);
+
+  useEffect(() => {
+    const node = bannerTrackRef.current;
+    if (!node || banners.length <= 1 || slides.length === 0) {
+      return undefined;
+    }
+
+    const handleTransitionEnd = () => {
+      if (activeBannerIndex === slides.length - 1) {
+        setIsBannerAnimating(false);
+        setActiveBannerIndex(1);
+      } else if (activeBannerIndex === 0) {
+        setIsBannerAnimating(false);
+        setActiveBannerIndex(slides.length - 2);
+      }
+    };
+
+    node.addEventListener("transitionend", handleTransitionEnd);
+    return () => {
+      node.removeEventListener("transitionend", handleTransitionEnd);
+    };
+  }, [activeBannerIndex, banners.length, slides.length]);
+
+  const updateDrawScrollState = useCallback(() => {
+    const node = drawScrollerRef.current;
+    if (!node) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = node;
+    const maxScrollLeft = scrollWidth - clientWidth;
+    const epsilon = 2;
+
+    setDrawScrollState({
+      canScrollLeft: scrollLeft > epsilon,
+      canScrollRight: maxScrollLeft > 0 && scrollLeft < maxScrollLeft - epsilon
+    });
+  }, []);
+
+  const updateWinnerScrollState = useCallback(() => {
+    const node = winnersScrollerRef.current;
+    if (!node) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = node;
+    const maxScrollLeft = scrollWidth - clientWidth;
+    const epsilon = 2;
+
+    setWinnerScrollState({
+      canScrollLeft: scrollLeft > epsilon,
+      canScrollRight: maxScrollLeft > 0 && scrollLeft < maxScrollLeft - epsilon
+    });
+  }, []);
+
+  useEffect(() => {
+    const node = drawScrollerRef.current;
+    if (!node) {
+      return undefined;
+    }
+
+    updateDrawScrollState();
+    node.addEventListener("scroll", updateDrawScrollState);
+
+    const handleResize = () => updateDrawScrollState();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      node.removeEventListener("scroll", updateDrawScrollState);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [updateDrawScrollState, draws.length]);
+
+  useEffect(() => {
+    updateDrawScrollState();
+  }, [draws.length, updateDrawScrollState]);
+
+  useEffect(() => {
+    const node = winnersScrollerRef.current;
+    if (!node) {
+      return undefined;
+    }
+
+    updateWinnerScrollState();
+    node.addEventListener("scroll", updateWinnerScrollState);
+
+    const handleResize = () => updateWinnerScrollState();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      node.removeEventListener("scroll", updateWinnerScrollState);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [updateWinnerScrollState, winners.length]);
+
+  useEffect(() => {
+    updateWinnerScrollState();
+  }, [winners.length, updateWinnerScrollState]);
+
+  const handleScroll = useCallback(
+    (direction) => {
+      const node = drawScrollerRef.current;
+      if (!node) {
+        return;
+      }
+
+      const scrollAmount = Math.max(node.clientWidth - 120, 280);
+      node.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
+      window.requestAnimationFrame(updateDrawScrollState);
+    },
+    [updateDrawScrollState]
+  );
+
+  const handleWinnerScroll = useCallback(
+    (direction) => {
+      const node = winnersScrollerRef.current;
+      if (!node) {
+        return;
+      }
+
+      const scrollAmount = Math.max(node.clientWidth - 120, 260);
+      node.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
+      window.requestAnimationFrame(updateWinnerScrollState);
+    },
+    [updateWinnerScrollState]
+  );
+
+  const handleBannerNav = useCallback(
+    (direction) => {
+      if (banners.length <= 1 || slides.length <= 1) {
+        return;
+      }
+
+      setIsBannerAnimating(true);
+      setActiveBannerIndex((previous) => {
+        const next = previous + direction;
+        if (next < 0) {
+          return 0;
+        }
+        const maxIndex = slides.length - 1;
+        if (next > maxIndex) {
+          return maxIndex;
+        }
+        return next;
+      });
+    },
+    [banners.length, slides.length]
+  );
+
+  const handleBannerSelect = useCallback((index) => {
+    if (!banners.length) {
+      return;
+    }
+
+    setIsBannerAnimating(true);
+    if (banners.length > 1) {
+      setActiveBannerIndex(index + 1);
+    } else {
+      setActiveBannerIndex(index);
+    }
+  }, [banners.length]);
+
+  const handleBannerCta = (banner) => {
+    navigate(getLotteryRoute(banner.lotteryId));
+  };
+
+  const handlePlayNow = () => {
+    navigate("/lotteries");
+  };
 
   return (
-    <main className="bg-white">
-      <HeroSection
-        title="Play. Win. Celebrate."
-        subtitle="Your global gateway to life-changing jackpots with transparent odds, secure payouts, and instant notifications."
-        primaryAction={{ label: "Explore Lotteries", onClick: () => navigate("/lotteries") }}
-        secondaryAction={{ label: "Learn How to Play", onClick: () => navigate("/how-to-play") }}
-        highlight={heroHighlight}
-      />
+    <div className="home">
+      <section className="banner">
+        {banners.length ? (
+          <div className="banner-inner">
+            <div
+              className="banner-track"
+              ref={bannerTrackRef}
+              style={{
+                transform: `translateX(-${resolvedActiveIndex * 100}%)`,
+                transition: isBannerAnimating ? "transform 0.6s ease" : "none"
+              }}
+            >
+              {slides.map(({ data: banner, slideKey }) => (
+                <article
+                  key={slideKey}
+                  className="banner-slide"
+                  id={slideKey}
+                  style={{ backgroundImage: banner.backgroundImage }}
+                >
+                  <div className="banner-content">
+                    <p className="banner-kicker">{banner.kicker}</p>
+                    <h1>{banner.headline}</h1>
+                    <p className="banner-description">{banner.description}</p>
+                    <div className="banner-meta">
+                      <span>{banner.ticketText}</span>
+                      <span>{banner.prizeText}</span>
+                      <span>{banner.frequencyText}</span>
+                    </div>
+                    <div className="banner-actions">
+                      <button
+                        className="btn"
+                        type="button"
+                        onClick={() => handleBannerCta(banner)}
+                      >
+                        {banner.ctaLabel}
+                      </button>
+                      <Link className="btn btn-outline" to="/lotteries">
+                        Explore Lotteries
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="carousel-btn banner-nav banner-nav--prev"
+              onClick={() => handleBannerNav(-1)}
+              aria-label="Previous banner"
+              disabled={banners.length <= 1}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className="carousel-btn banner-nav banner-nav--next"
+              onClick={() => handleBannerNav(1)}
+              aria-label="Next banner"
+              disabled={banners.length <= 1}
+            >
+              ›
+            </button>
+            <div className="banner-dots" role="tablist" aria-label="Featured lotteries">
+              {banners.map((banner, index) => {
+                const slideForDot = banners.length > 1 ? slides[index + 1] : slides[index];
+                const controlId = slideForDot?.slideKey ?? `${banner.id}-${index}`;
 
-      <section className="bg-brand-light">
-        <div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 lg:py-20">
-          <header className="flex flex-col gap-4 text-center">
-            <h2 className="text-3xl font-heading font-bold text-brand-blue sm:text-4xl">
-              Our Draws
-            </h2>
-            <p className="mx-auto max-w-2xl text-base text-brand-dark/70">
-              Discover the Zottry lineup — curated draws designed to match every playing style. Pick the frequency
-              that fits your rhythm and chase prizes that grow with every ticket.
-            </p>
-          </header>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {draws.map((draw) => (
-              <LotteryCard
-                key={draw.id}
-                title={draw.title}
-                frequency={draw.frequency}
-                price={draw.price}
-                prize={draw.prize}
-                description={draw.description}
-                onAction={() => navigate(draw.route)}
-              />
-            ))}
+                return (
+                <button
+                  key={banner.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={realBannerIndex === index}
+                  className={`banner-dot ${
+                    realBannerIndex === index ? "banner-dot--active" : ""
+                  }`.trim()}
+                  onClick={() => handleBannerSelect(index)}
+                  aria-controls={controlId}
+                >
+                  <span className="visually-hidden">{banner.kicker}</span>
+                </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="banner-fallback">
+            <h1>Every ticket sparks a new legend</h1>
+            <p>We&apos;re loading today&apos;s featured jackpots. Hang tight!</p>
+            <div className="banner-actions">
+              <button className="btn" type="button" onClick={handlePlayNow}>
+                View lotteries
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
-      <section className="bg-brand-blue">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-16 text-center text-white sm:px-10 lg:flex-row lg:justify-between lg:text-left">
-          <div className="space-y-4">
-            <h3 className="text-2xl font-heading font-semibold text-white sm:text-3xl">
-              Join thousands of winners worldwide!
-            </h3>
-            <p className="max-w-xl text-base text-white/80">
-              Set your limits, pick your draw, and watch the results roll in. Zottry keeps every ticket secure and every
-              prize transparent.
-            </p>
+      <section id="our-draws" className="our-draws page">
+        <h2>Our Draws</h2>
+        <p className="section-intro">Select your favourite draw, pick your lucky numbers, and we’ll handle the rest.</p>
+        {loading && !hasDraws ? (
+          <p className="loading-copy" role="status">
+            Fetching the latest draws…
+          </p>
+        ) : hasDraws ? (
+          <div className="draw-carousel">
+            <button
+              type="button"
+              className="carousel-btn carousel-btn--prev"
+              onClick={() => handleScroll(-1)}
+              disabled={!drawScrollState.canScrollLeft}
+              aria-label="Scroll draws left"
+            >
+              ‹
+            </button>
+            <div className="draw-grid" ref={drawScrollerRef}>
+              {draws.map((draw) => (
+                <LotteryCard key={draw.id} {...draw} />
+              ))}
+            </div>
+            <button
+              type="button"
+              className="carousel-btn carousel-btn--next"
+              onClick={() => handleScroll(1)}
+              disabled={!drawScrollState.canScrollRight}
+              aria-label="Scroll draws right"
+            >
+              ›
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => openLoginModal("register")}
-            className="inline-flex items-center justify-center rounded-full bg-brand-red px-7 py-3 text-sm font-semibold text-white shadow-md shadow-brand-red/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-blue/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            Register Now
-          </button>
-        </div>
+        ) : (
+          <p className="loading-copy" role="status">
+            Draws are being configured. Please check back shortly.
+          </p>
+        )}
       </section>
-    </main>
+
+      <section className="winners page">
+        <h2>Winners Spotlight</h2>
+        <p className="section-intro">Congratulations to our recent champions from around the world.</p>
+        {hasWinners ? (
+          <div className="winners-carousel">
+            <button
+              type="button"
+              className="carousel-btn carousel-btn--prev"
+              onClick={() => handleWinnerScroll(-1)}
+              disabled={!winnerScrollState.canScrollLeft}
+              aria-label="Scroll winners left"
+            >
+              ‹
+            </button>
+            <div className="winners-grid" ref={winnersScrollerRef}>
+              {winners.map((winner) => {
+                const formattedDate = formatWinnerDate(winner.wonAt);
+                return (
+                  <article key={`${winner.name}-${winner.draw}`} className="winner-card">
+                    <header className="winner-header">
+                      <h3>{winner.name}</h3>
+                      <span className="winner-draw">{winner.draw}</span>
+                    </header>
+                    <p className="winner-amount">{winner.amount}</p>
+                    {Array.isArray(winner.numbers) && winner.numbers.length > 0 && (
+                      <ul className="winner-numbers" aria-label={`Winning numbers for ${winner.draw}`}>
+                        {winner.numbers.map((number) => (
+                          <li key={`${winner.draw}-${number}`}>{number}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {formattedDate && (
+                      <p className="winner-timestamp">Won on {formattedDate}</p>
+                    )}
+                    <p className="winner-location">{winner.location}</p>
+                  </article>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              className="carousel-btn carousel-btn--next"
+              onClick={() => handleWinnerScroll(1)}
+              disabled={!winnerScrollState.canScrollRight}
+              aria-label="Scroll winners right"
+            >
+              ›
+            </button>
+          </div>
+        ) : (
+          <p className="loading-copy" role="status">
+            We're gathering the latest winner stories.
+          </p>
+        )}
+      </section>
+    </div>
   );
 }
 
